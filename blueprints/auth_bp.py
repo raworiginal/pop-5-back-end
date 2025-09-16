@@ -6,10 +6,10 @@ import psycopg2.extras
 from flask import Blueprint, jsonify, request
 from db_helpers import get_db_connection
 
-authentication_blueprint = Blueprint("authentication_blueprint", __name__)
+auth_bp = Blueprint("auth_bp", __name__)
 
 
-@authentication_blueprint.route("/auth/sign-up", methods=["POST"])
+@auth_bp.route("/auth/sign-up", methods=["POST"])
 def sign_up():
     try:
         new_user_data = request.get_json()
@@ -39,7 +39,7 @@ def sign_up():
         return jsonify({"err": str(err)}), 401
 
 
-@authentication_blueprint.route("/auth/sign-in", methods=["POST"])
+@auth_bp.route("/auth/sign-in", methods=["POST"])
 def sign_in():
     try:
         sign_in_form_data = request.get_json()
@@ -58,6 +58,7 @@ def sign_in():
         if not password_is_valid:
             return jsonify({"err": "Invalid credentials."}), 401
         payload = {"username": existing_user["username"], "id": existing_user["id"]}
+        print(os.getenv("data"))
         token = jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
         return jsonify({"token": token}), 201
     except Exception as err:

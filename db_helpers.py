@@ -3,6 +3,7 @@ import psycopg2
 
 
 def get_db_connection():
+
     connection = psycopg2.connect(
         host="localhost",
         database=os.getenv("POSTGRES_DATABASE"),
