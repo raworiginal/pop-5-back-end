@@ -7,14 +7,14 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(50) UNIQUE NOT NULL,
-  hashed_password VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- TOPICS table
 CREATE TABLE topics (
   id SERIAL PRIMARY KEY,
-  mod_id INT NOT NULL REFERENCES users(id),
+  owner INT NOT NULL REFERENCES users(id),
   name VARCHAR(100) NOT NULL,
   description TEXT,
   category TEXT CHECK (

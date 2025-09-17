@@ -6,10 +6,10 @@ import psycopg2.extras
 from flask import Blueprint, jsonify, request
 from db_helpers import get_db_connection
 
-auth_bp = Blueprint("auth_bp", __name__)
+auth_bp = Blueprint("auth_bp", __name__, url_prefix="/auth")
 
 
-@auth_bp.route("/auth/sign-up", methods=["POST"])
+@auth_bp.route("/sign-up", methods=["POST"])
 def sign_up():
     try:
         new_user_data = request.get_json()
@@ -39,7 +39,7 @@ def sign_up():
         return jsonify({"err": str(err)}), 401
 
 
-@auth_bp.route("/auth/sign-in", methods=["POST"])
+@auth_bp.route("/sign-in", methods=["POST"])
 def sign_in():
     try:
         sign_in_form_data = request.get_json()
