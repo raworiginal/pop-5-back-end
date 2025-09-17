@@ -94,3 +94,32 @@ def topic_show(topic_id):
         return jsonify(topics), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
+
+
+# UPDATE A TOPIC
+@topics_bp.route("/<topic_id>", methods=["PUT"])
+@token_required
+def update_topic(topic_id):
+    try:
+        updated_topic_data = request.get_json()
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute("SELECT * FROM topics WHERE topics.id = %s", (topic_id))
+        topic_to_update = curs.fetchone()
+        if topic_to_update is None:
+            return jsonify({"error": "topic not found"}), 404
+        conn.commit()
+        if topic_to_update["owner"] is not g.user["id"]:
+            return jsonify({"error": "Unauthorized"}), 401
+        curs.execute(
+            """
+            UPDATE topics SET title = %s, description = %s WHERE topics.id = %s RETURNING *
+            """,
+            (updated_topic_data["title"], updated_topic_data["description"], topic_id),
+        )
+        updated_topic = curs.fetchone()
+        conn.commit()
+        conn.close()
+        return jsonify(updated_topic), 200
+    except Exception as error:
+        return jsonify({"ERROR": str(error)})
