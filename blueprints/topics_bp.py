@@ -34,6 +34,35 @@ def create_topic():
         )
         created_topic = curs.fetchone()
         conn.commit()
+        conn.close()
         return jsonify(created_topic), 201
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
+
+
+# READ ALL TOPICS
+@topics_bp.route("/", methods=["GET"])
+@token_required
+def topics_index():
+    try:
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute(
+            """
+            SELECT 
+            t.id, t.title, t.description, t.category, t.owner, t.created_at,
+            json_build_object(
+                'id', t.owner,
+                'username', u.username
+            ) AS owner
+            FROM topics t
+            JOIN users u
+            ON t.owner = u.id
+            """
+        )
+        topics = curs.fetchall()
+        conn.commit()
+        conn.close()
+        return jsonify(topics), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
