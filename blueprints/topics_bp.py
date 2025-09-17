@@ -122,4 +122,4 @@ def update_topic(topic_id):
         conn.close()
         return jsonify(updated_topic), 200
     except Exception as error:
-        return jsonify({"ERROR": str(error)})
+        return jsonify({"error": str(error)})

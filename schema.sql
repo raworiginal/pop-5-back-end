@@ -15,7 +15,7 @@ CREATE TABLE users (
 CREATE TABLE topics (
   id SERIAL PRIMARY KEY,
   owner INT NOT NULL REFERENCES users(id),
-  name VARCHAR(100) NOT NULL,
+  title VARCHAR(100) NOT NULL,
   description TEXT,
   category TEXT CHECK (
     category IN ('anime','movies','music','tv','video games')
