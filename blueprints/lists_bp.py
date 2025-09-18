@@ -1,6 +1,3 @@
-import os
-import jwt
-import bcrypt
 import psycopg2
 import psycopg2.extras
 from flask import Blueprint, jsonify, request, g
@@ -105,11 +102,67 @@ def show_list(list_id):
             (list_id,),
         )
         list = curs.fetchone()
-        print(list)
         if list is None:
             return jsonify({"error": "List not found"}), 404
         conn.commit()
         conn.close()
         return jsonify(list)
+    except Exception as error:
+        return jsonify({"error": str(error)}), 500
+
+
+# UPDATE LIST ROUTE BY LIST ID
+@lists_bp.route("/lists/<list_id>", methods=["PUT"])
+@token_required
+def update_list(list_id):
+    try:
+        updated_list_data = request.get_json()
+        if len(updated_list_data["list_items"]) != 5:
+            return jsonify({"error": "List must have 5 items"}), 400
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute(
+            """
+            SELECT * FROM list_items WHERE list_id = %s
+            """,
+            (list_id,),
+        )
+        list_items_to_update = curs.fetchall()
+        if not list_items_to_update:
+            return jsonify({"error": "list not found"}), 404
+
+        curs.execute(
+            """
+            SELECT author_id as id FROM lists WHERE id = %s 
+            """,
+            (list_id,),
+        )
+        author = curs.fetchone()
+        if author["id"] is not g.user["id"]:
+            return jsonify({"error": "Unauthorized"}), 401
+        for idx, item in enumerate(list_items_to_update):
+            print(f"Index = {idx}: item id = {item['id']} ")
+            updated_list_item = updated_list_data["list_items"][idx]
+            updated_rank = idx + 1
+            print(updated_list_item)
+            curs.execute(
+                """
+                UPDATE list_items SET rank = %s, external_id = %s, notes =%s
+                WHERE id = %s
+                RETURNING *
+                """,
+                (
+                    updated_rank,
+                    updated_list_item["external_id"],
+                    updated_list_item["notes"],
+                    item["id"],
+                ),
+            )
+        curs.execute("SELECT * FROM list_items WHERE list_id = %s", (list_id,))
+        updated_list_items = curs.fetchall()
+
+        conn.commit()
+        conn.close()
+        return jsonify(updated_list_items), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500

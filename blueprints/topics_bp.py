@@ -1,6 +1,3 @@
-import os
-import jwt
-import bcrypt
 import psycopg2
 import psycopg2.extras
 from flask import Blueprint, jsonify, request, g
@@ -110,7 +107,6 @@ def update_topic(topic_id):
         topic_to_update = curs.fetchone()
         if topic_to_update is None:
             return jsonify({"error": "topic not found"}), 404
-        conn.commit()
         if topic_to_update["owner"] is not g.user["id"]:
             return jsonify({"error": "Unauthorized"}), 401
         curs.execute(
