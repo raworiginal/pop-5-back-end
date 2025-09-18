@@ -66,7 +66,7 @@ def create_list(topic_id):
         created_list["list_items"] = created_list_items
         conn.commit()
         conn.close()
-        return jsonify(created_list), 200
+        return jsonify(created_list), 201
     except Exception as error:
         return jsonify({"error": str(error)}), 500
 
@@ -86,6 +86,29 @@ def lists_index():
         lists = curs.fetchall()
         conn.commit()
         conn.close()
-        return jsonify(lists)
+        return jsonify(lists), 200
+    except Exception as error:
+        return jsonify({"error": str(error)})
+
+
+# SHOW LIST ROUTE BY LIST ID
+@lists_bp.route("/lists/<list_id>", methods=["GET"])
+@token_required
+def show_list(list_id):
+    try:
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute(
+            """
+            SELECT * FROM lists_index WHERE id = %s
+            """,
+            (list_id),
+        )
+        list = curs.fetchone()
+        if list is None:
+            return jsonify({"error": "List not found"}), 404
+        conn.commit()
+        conn.close()
+        return jsonify(list)
     except Exception as error:
         return jsonify({"error": str(error)})

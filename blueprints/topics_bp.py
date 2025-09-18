@@ -88,10 +88,12 @@ def topic_show(topic_id):
             """,
             (topic_id),
         )
-        topics = curs.fetchone()
+        topic = curs.fetchone()
+        if topic is None:
+            return jsonify({"error": "topic not found"})
         conn.commit()
         conn.close()
-        return jsonify(topics), 200
+        return jsonify(topic), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
 
