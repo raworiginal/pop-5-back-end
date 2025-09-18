@@ -69,3 +69,23 @@ def create_list(topic_id):
         return jsonify(created_list), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
+
+
+# READ ALL LISTS
+@lists_bp.route("/lists", methods=["GET"])
+@token_required
+def lists_index():
+    try:
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute(
+            """
+            SELECT * FROM lists_index
+            """
+        )
+        lists = curs.fetchall()
+        conn.commit()
+        conn.close()
+        return jsonify(lists)
+    except Exception as error:
+        return jsonify({"error": str(error)})
