@@ -166,3 +166,24 @@ def update_list(list_id):
         return jsonify(updated_list_items), 200
     except Exception as error:
         return jsonify({"error": str(error)}), 500
+
+
+# DELETE A LIST
+@lists_bp.route("/lists/<list_id>", methods=["DELETE"])
+@token_required
+def delete_list(list_id):
+    try:
+        conn = get_db_connection()
+        curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        curs.execute("SELECT * FROM lists WHERE id = %s", (list_id,))
+        list_to_delete = curs.fetchone()
+        if not list_to_delete:
+            return jsonify({"error": "list not found"}), 404
+        if list_to_delete["author_id"] is not g.user["id"]:
+            return jsonify({"error": "Unauthorized"}), 401
+        curs.execute("DELETE FROM lists WHERE id = %s", (list_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({"DELETED": list_to_delete})
+    except Exception as error:
+        return jsonify({"error": str(error)})
