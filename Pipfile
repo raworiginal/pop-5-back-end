@@ -9,6 +9,7 @@ psycopg2 = "*"
 python-dotenv = "*"
 pyjwt = "*"
 bcrypt = "*"
+requests = "*"
 
 [dev-packages]
 

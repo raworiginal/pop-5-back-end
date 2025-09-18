@@ -3,20 +3,9 @@ import psycopg2.extras
 from flask import Blueprint, jsonify, request, g
 from db_helpers import get_db_connection
 from auth_middleware import token_required
+from proxy import get_movie_by_id
 
 lists_bp = Blueprint("lists_bp", __name__)
-
-"""
-/lists # all lists
-/topics/topic_id # all lists in a topic
-
-UPDATE
-/topics/topic_id/lists/list_id # list show page
-
-DELETE
-/topics/topic_id/lists/list_id # list show page
-
-"""
 
 
 # CREATE A LIST
@@ -81,6 +70,12 @@ def lists_index():
             """
         )
         lists = curs.fetchall()
+
+        for list in lists:
+            for item in list["items"]:
+                item_details = get_movie_by_id(item["ext_id"])
+                item.update(item_details)
+
         conn.commit()
         conn.close()
         return jsonify(lists), 200
@@ -104,6 +99,11 @@ def show_list(list_id):
         list = curs.fetchone()
         if list is None:
             return jsonify({"error": "List not found"}), 404
+
+        for item in list["items"]:
+            item_details = get_movie_by_id(item["ext_id"])
+            item.update(item_details)
+
         conn.commit()
         conn.close()
         return jsonify(list)
