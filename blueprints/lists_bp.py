@@ -88,7 +88,7 @@ def lists_index():
         conn.close()
         return jsonify(lists), 200
     except Exception as error:
-        return jsonify({"error": str(error)})
+        return jsonify({"error": str(error)}), 500
 
 
 # SHOW LIST ROUTE BY LIST ID
@@ -102,13 +102,14 @@ def show_list(list_id):
             """
             SELECT * FROM lists_index WHERE id = %s
             """,
-            (list_id),
+            (list_id,),
         )
         list = curs.fetchone()
+        print(list)
         if list is None:
             return jsonify({"error": "List not found"}), 404
         conn.commit()
         conn.close()
         return jsonify(list)
     except Exception as error:
-        return jsonify({"error": str(error)})
+        return jsonify({"error": str(error)}), 500

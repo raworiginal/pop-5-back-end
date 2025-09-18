@@ -86,11 +86,11 @@ def topic_show(topic_id):
             ON t.owner = u.id
             WHERE t.id = %s
             """,
-            (topic_id),
+            (topic_id,),
         )
         topic = curs.fetchone()
         if topic is None:
-            return jsonify({"error": "topic not found"})
+            return jsonify({"error": "topic not found"}), 404
         conn.commit()
         conn.close()
         return jsonify(topic), 200
