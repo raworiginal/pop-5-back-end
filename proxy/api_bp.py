@@ -1,13 +1,14 @@
-import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
+from auth_middleware import token_required
 
 
-api_bp = Blueprint("api_bp", __name__)
+api_bp = Blueprint("api_bp", __name__, url_prefix="/api")
 
-access_token = os.getenv("TMDB_ACCESS_TOKEN")
-print(access_token)
+
+@api_bp.route("/movies/search")
+@token_required
+def get_search_results():
+    try:
+        pass
+    except Exception as error:
+        return jsonify({"error": error})

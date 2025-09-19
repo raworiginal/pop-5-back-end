@@ -13,7 +13,6 @@ lists_bp = Blueprint("lists_bp", __name__)
 @token_required
 def create_list(topic_id):
     try:
-
         list_data = request.get_json()
         list_data["author"] = g.user["id"]
         list_data["topic"] = int(topic_id)
