@@ -13,6 +13,7 @@ lists_bp = Blueprint("lists_bp", __name__, url_prefix="/topics/<topic_id>/lists"
 @token_required
 def create_list(topic_id):
     try:
+
         list_data = request.get_json()
         list_data["author"] = g.user["id"]
         list_data["topic"] = int(topic_id)
@@ -39,18 +40,23 @@ def create_list(topic_id):
             item["rank"] = idx + 1
             curs.execute(
                 """
-                INSERT INTO list_items (list_id, rank, external_id, notes)
+                INSERT INTO list_items (list_id, rank, ext_id, notes)
                 VALUES (%s,%s,%s,%s)
                 RETURNING *
                 """,
-                (created_list["id"], item["rank"], item["external_id"], item["notes"]),
+                (created_list["id"], item["rank"], item["ext_id"], item["notes"]),
             )
             created_item = curs.fetchone()
             created_list_items.append(created_item)
 
+        for item in created_list_items:
+            item_details = get_movie_by_id(item["ext_id"])
+            item.update(item_details)
+
         created_list["list_items"] = created_list_items
         conn.commit()
         conn.close()
+
         return jsonify(created_list), 201
     except Exception as error:
         return jsonify({"error": str(error)}), 500
@@ -148,13 +154,13 @@ def update_list(topic_id, list_id):
             print(updated_list_item)
             curs.execute(
                 """
-                UPDATE list_items SET rank = %s, external_id = %s, notes =%s
+                UPDATE list_items SET rank = %s, ext_id = %s, notes =%s
                 WHERE id = %s
                 RETURNING *
                 """,
                 (
                     updated_rank,
-                    updated_list_item["external_id"],
+                    updated_list_item["ext_id"],
                     updated_list_item["notes"],
                     item["id"],
                 ),
@@ -172,7 +178,7 @@ def update_list(topic_id, list_id):
 # DELETE A LIST
 @lists_bp.route("/<list_id>", methods=["DELETE"])
 @token_required
-def delete_list(list_id):
+def delete_list(topic_id, list_id):
     try:
         conn = get_db_connection()
         curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)

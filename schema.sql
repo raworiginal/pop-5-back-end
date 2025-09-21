@@ -37,7 +37,7 @@ CREATE TABLE list_items (
   id SERIAL PRIMARY KEY,
   list_id INT NOT NULL REFERENCES lists(id) ON DELETE CASCADE,
   rank INT NOT NULL CHECK (rank BETWEEN 1 AND 5),
-  external_id TEXT NOT NULL,
+  ext_id TEXT NOT NULL,
   notes TEXT,
   UNIQUE (list_id, rank)           
 );

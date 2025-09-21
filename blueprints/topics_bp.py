@@ -111,9 +111,14 @@ def update_topic(topic_id):
             return jsonify({"error": "Unauthorized"}), 401
         curs.execute(
             """
-            UPDATE topics SET title = %s, description = %s WHERE topics.id = %s RETURNING *
+            UPDATE topics SET title = %s, description = %s, category=%s WHERE topics.id = %s RETURNING *
             """,
-            (updated_topic_data["title"], updated_topic_data["description"], topic_id),
+            (
+                updated_topic_data["title"],
+                updated_topic_data["description"],
+                updated_topic_data["category"],
+                topic_id,
+            ),
         )
         updated_topic = curs.fetchone()
         conn.commit()

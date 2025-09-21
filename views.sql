@@ -5,7 +5,7 @@ CREATE OR REPLACE VIEW lists_index AS
   json_agg(
     json_build_object(
       'rank', items.rank,
-      'ext_id', items.external_id,
+      'ext_id', items.ext_id,
       'notes', items.notes,
       'id',items.id
       ) ORDER BY items.rank ASC
