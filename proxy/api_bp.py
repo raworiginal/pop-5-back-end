@@ -5,7 +5,7 @@ from .movies_tmdb import search_for_movie
 api_bp = Blueprint("api_bp", __name__, url_prefix="/api")
 
 
-@api_bp.route("/movies/search")
+@api_bp.route("/movies/search", methods=["POST"])
 @token_required
 def get_search_results():
     try:

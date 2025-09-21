@@ -27,7 +27,7 @@ def get_movie_by_id(movie_id):
 def search_for_movie(params):
     keys_to_keep = ["id", "title", "poster_path", "release_date"]
     response = requests.get(BASE_SEARCH_URL, params=params, headers=headers).json()
-    results = response["results"]
+    results = response["results"][:5]
     trimmed_results = []
     for result in results:
         result = {key: result[key] for key in keys_to_keep if key in result}

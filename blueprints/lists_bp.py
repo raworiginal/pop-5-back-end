@@ -5,11 +5,11 @@ from db_helpers import get_db_connection
 from auth_middleware import token_required
 from proxy import get_movie_by_id
 
-lists_bp = Blueprint("lists_bp", __name__)
+lists_bp = Blueprint("lists_bp", __name__, url_prefix="/topics/<topic_id>/lists")
 
 
 # CREATE A LIST
-@lists_bp.route("/topics/<topic_id>/lists", methods=["POST"])
+@lists_bp.route("/", methods=["POST"])
 @token_required
 def create_list(topic_id):
     try:
@@ -56,17 +56,19 @@ def create_list(topic_id):
         return jsonify({"error": str(error)}), 500
 
 
-# READ ALL LISTS
-@lists_bp.route("/lists", methods=["GET"])
+# READ ALL LISTS In A Topic
+@lists_bp.route("/", methods=["GET"])
 @token_required
-def lists_index():
+def lists_index(topic_id):
     try:
         conn = get_db_connection()
         curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         curs.execute(
             """
             SELECT * FROM lists_index
-            """
+            WHERE topic_id = %s
+            """,
+            (topic_id),
         )
         lists = curs.fetchall()
 
@@ -83,7 +85,7 @@ def lists_index():
 
 
 # SHOW LIST ROUTE BY LIST ID
-@lists_bp.route("/lists/<list_id>", methods=["GET"])
+@lists_bp.route("/<list_id>", methods=["GET"])
 @token_required
 def show_list(list_id):
     try:
@@ -111,9 +113,9 @@ def show_list(list_id):
 
 
 # UPDATE LIST ROUTE BY LIST ID
-@lists_bp.route("/lists/<list_id>", methods=["PUT"])
+@lists_bp.route("/<list_id>", methods=["PUT"])
 @token_required
-def update_list(list_id):
+def update_list(topic_id, list_id):
     try:
         updated_list_data = request.get_json()
         if len(updated_list_data["list_items"]) != 5:
@@ -168,7 +170,7 @@ def update_list(list_id):
 
 
 # DELETE A LIST
-@lists_bp.route("/lists/<list_id>", methods=["DELETE"])
+@lists_bp.route("/<list_id>", methods=["DELETE"])
 @token_required
 def delete_list(list_id):
     try:
