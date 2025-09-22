@@ -36,7 +36,7 @@ def create_list(topic_id):
 
         # ADD EACH LIST ITEMS TO THE LIST_ITEMS TABLE
         created_list_items = []
-        for idx, item in enumerate(list_data["list_items"]):
+        for idx, item in enumerate(list_data["items"]):
             item["rank"] = idx + 1
             curs.execute(
                 """
@@ -53,7 +53,7 @@ def create_list(topic_id):
             item_details = get_movie_by_id(item["ext_id"])
             item.update(item_details)
 
-        created_list["list_items"] = created_list_items
+        created_list["items"] = created_list_items
         conn.commit()
         conn.close()
 
@@ -124,7 +124,7 @@ def show_list(list_id):
 def update_list(list_id):
     try:
         updated_list_data = request.get_json()
-        if len(updated_list_data["list_items"]) != 5:
+        if len(updated_list_data["items"]) != 5:
             return jsonify({"error": "List must have 5 items"}), 400
         conn = get_db_connection()
         curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -148,7 +148,7 @@ def update_list(list_id):
         if author["id"] is not g.user["id"]:
             return jsonify({"error": "Unauthorized"}), 401
         for idx, item in enumerate(list_items_to_update):
-            updated_list_item = updated_list_data["list_items"][idx]
+            updated_list_item = updated_list_data["items"][idx]
             updated_rank = idx + 1
             curs.execute(
                 """
