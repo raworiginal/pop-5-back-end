@@ -58,7 +58,6 @@ def sign_in():
         if not password_is_valid:
             return jsonify({"err": "Invalid credentials."}), 401
         payload = {"username": existing_user["username"], "id": existing_user["id"]}
-        print(os.getenv("data"))
         token = jwt.encode(payload, os.getenv("JWT_SECRET"), algorithm="HS256")
         return jsonify({"token": token}), 201
     except Exception as err:
