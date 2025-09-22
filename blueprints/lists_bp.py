@@ -17,7 +17,7 @@ def create_list(topic_id):
         list_data = request.get_json()
         list_data["author"] = g.user["id"]
         list_data["topic"] = int(topic_id)
-        if len(list_data["list_items"]) != 5:
+        if len(list_data["items"]) != 5:
             return jsonify({"error": "List must have 5 elements"}), 400
 
         conn = get_db_connection()
