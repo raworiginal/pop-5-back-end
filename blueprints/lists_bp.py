@@ -176,7 +176,7 @@ def update_list(list_id):
 
 
 # DELETE A LIST
-@lists_bp.route("/<list_id>", methods=["DELETE"])
+@lists_bp.route("/lists/<list_id>", methods=["DELETE"])
 @token_required
 def delete_list(list_id):
     try:
