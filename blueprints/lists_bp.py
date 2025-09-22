@@ -148,10 +148,8 @@ def update_list(list_id):
         if author["id"] is not g.user["id"]:
             return jsonify({"error": "Unauthorized"}), 401
         for idx, item in enumerate(list_items_to_update):
-            print(f"Index = {idx}: item id = {item['id']} ")
             updated_list_item = updated_list_data["list_items"][idx]
             updated_rank = idx + 1
-            print(updated_list_item)
             curs.execute(
                 """
                 UPDATE list_items SET rank = %s, ext_id = %s, notes =%s
