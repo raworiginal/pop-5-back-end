@@ -17,8 +17,8 @@ def get_movie_by_id(movie_id):
     keys_to_keep = ["title", "overview", "release_date", "poster_path", "genres"]
     response = requests.get(BASE_DETAILS_URL + movie_id, headers=headers).json()
     response = {key: response[key] for key in keys_to_keep if key in response}
-
-    response["poster_path"] = BASE_IMAGE_URL + response["poster_path"]
+    poster = response.get("poster_path")
+    response["poster_path"] = BASE_IMAGE_URL + poster if poster else None
     response["genres"] = [genre["name"] for genre in response["genres"]]
 
     return response

@@ -74,7 +74,7 @@ def lists_index(topic_id):
             SELECT * FROM lists_index
             WHERE topic_id = %s
             """,
-            (topic_id),
+            (topic_id,),
         )
         lists = curs.fetchall()
 
