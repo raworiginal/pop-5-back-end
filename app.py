@@ -7,7 +7,6 @@ from proxy import api_bp
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(topics_bp)
 app.register_blueprint(lists_bp)
