@@ -10,6 +10,7 @@ python-dotenv = "*"
 pyjwt = "*"
 bcrypt = "*"
 requests = "*"
+flask-cors = "*"
 
 [dev-packages]
 
