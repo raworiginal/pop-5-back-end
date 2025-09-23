@@ -11,6 +11,7 @@ pyjwt = "*"
 bcrypt = "*"
 requests = "*"
 flask-cors = "*"
+gunicorn = "*"
 
 [dev-packages]
 
