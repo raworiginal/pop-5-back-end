@@ -55,6 +55,7 @@ def topics_index():
             FROM topics t
             JOIN users u
             ON t.owner = u.id
+            ORDER BY t.created_at DESC
             """
         )
         topics = curs.fetchall()
