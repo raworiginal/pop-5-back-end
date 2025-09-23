@@ -1,5 +1,5 @@
 CREATE OR REPLACE VIEW lists_index AS
-  SELECT topics.id as topic_id, topics.title, topics.category, lists.id,
+  SELECT topics.id as topic_id, topics.title, topics.category, lists.id, lists.created_at,
   json_build_object('id', lists.author_id, 'username', users.username) AS
   author,
   json_agg(
@@ -14,4 +14,4 @@ CREATE OR REPLACE VIEW lists_index AS
   INNER JOIN users on lists.author_id = users.id
   INNER JOIN topics on lists.topic_id = topics.id
   LEFT JOIN list_items items on items.list_id = lists.id
-  GROUP BY topics.id, topics.title, topics.category, lists.id, lists.author_id, users.username;
+  GROUP BY topics.id, topics.title, topics.category, lists.id, lists.created_at, lists.author_id, users.username;
